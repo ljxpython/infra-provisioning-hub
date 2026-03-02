@@ -8,13 +8,21 @@
 
 ## 1. 安装 uv
 
-优先使用官方安装脚本：
+实测成功方式（2026-03-02，root 用户）：
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
+source "$HOME/.local/bin/env"
 ```
 
-把 `uv` 加入 PATH（当前会话 + 永久）：
+验证：
+
+```bash
+command -v uv
+uv --version
+```
+
+为避免新终端找不到 `uv`，再做一次永久 PATH 配置（推荐）：
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
@@ -22,12 +30,16 @@ grep -q 'export PATH="$HOME/.local/bin:$PATH"' ~/.bashrc || echo 'export PATH="$
 source ~/.bashrc
 ```
 
-验证：
+再次验证：
 
 ```bash
 which uv
 uv --version
 ```
+
+避坑：
+- 安装脚本执行后，先 `source "$HOME/.local/bin/env"`，再执行 `uv --version`，成功率最高。
+- 如果只改了 `~/.bashrc` 但当前会话仍报 `uv: command not found`，先执行：`export PATH="$HOME/.local/bin:$PATH"; hash -r`。
 
 ## 2. 创建 Python 3.13 虚拟环境
 

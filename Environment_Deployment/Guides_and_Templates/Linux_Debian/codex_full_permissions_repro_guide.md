@@ -7,6 +7,11 @@
 - 默认全盘文件访问
 - 默认允许联网检索
 
+实测基准（2026-03-02）：
+- `approval_policy = never`
+- `sandbox_mode = danger-full-access`
+- `network_access = enabled`
+
 ---
 
 ## 1. 核心结论（必须先知道）
@@ -107,6 +112,8 @@ TOML
 
 不同客户端参数名可能略有差异，请以实际 CLI/UI 为准。
 
+补充：若你已写入全局配置但当前会话仍非最高权限，优先检查“会话启动参数”是否覆盖了配置文件。
+
 ---
 
 ## 6. 生效验证
@@ -126,8 +133,8 @@ cat ~/.codex/config.toml
 
 在 Codex 会话日志或上下文里确认：
 - `approval_policy` 是否为 `never`
-- `sandbox_policy.type` 是否为 `danger-full-access`
-- `network_access` 是否为 `true`
+- `sandbox_mode` 或 `sandbox_policy.type` 是否为 `danger-full-access`
+- `network_access` 是否为 `enabled/true`
 
 如果这里显示 `on-request/workspace-write/network=false`，说明会话被覆盖，和配置文件无关。
 
@@ -159,4 +166,3 @@ cat ~/.codex/config.toml
 2. 新建会话时使用的高权限启动参数（本文件第 5 节）
 3. 生效验证命令（本文件第 6 节）
 4. 常见问题判定逻辑（本文件第 7 节）
-
