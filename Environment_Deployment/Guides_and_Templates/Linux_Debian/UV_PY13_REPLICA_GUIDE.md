@@ -41,7 +41,29 @@ uv --version
 - 安装脚本执行后，先 `source "$HOME/.local/bin/env"`，再执行 `uv --version`，成功率最高。
 - 如果只改了 `~/.bashrc` 但当前会话仍报 `uv: command not found`，先执行：`export PATH="$HOME/.local/bin:$PATH"; hash -r`。
 
-## 2. 创建 Python 3.13 虚拟环境
+## 2. 安装 Python 编译依赖（Debian/Ubuntu）
+
+如果你的 Python 环境后续出现 `ModuleNotFoundError: No module named '_sqlite3'`，通常是编译解释器时缺少 sqlite 开发库。先安装以下依赖再继续：
+
+```bash
+apt-get update
+apt-get install -y \
+  build-essential \
+  libsqlite3-dev \
+  sqlite3 \
+  libssl-dev \
+  zlib1g-dev \
+  libbz2-dev \
+  libreadline-dev \
+  libffi-dev \
+  liblzma-dev
+```
+
+说明：
+- 如果你直接使用系统已安装的 `python3.13`，请先确认该解释器已包含 `sqlite3`。
+- 若不包含，请重新安装/编译 Python 后再创建虚拟环境。
+
+## 3. 创建 Python 3.13 虚拟环境
 
 推荐使用你服务器里现有的 `python3.13`：
 
@@ -64,7 +86,7 @@ uv venv /opt/venvs/main/py13 --python 3.13
 /opt/venvs/main/py13/bin/pip --version
 ```
 
-## 3. 配置进入/退出虚拟环境别名
+## 4. 配置进入/退出虚拟环境别名
 
 写入 `~/.bashrc`：
 
@@ -81,7 +103,7 @@ v13in
 v13out
 ```
 
-## 4. 在该虚拟环境中安装依赖（等价替代 uv add）
+## 5. 在该虚拟环境中安装依赖（等价替代 uv add）
 
 说明：`uv add` 主要用于“项目依赖声明（pyproject.toml）”。  
 你这里是“统一环境预装包”，应使用 `uv pip install`。
@@ -109,7 +131,7 @@ uv pip install --python /opt/venvs/main/py13/bin/python -U \
   langchain-openai
 ```
 
-## 5. 常见问题
+## 6. 常见问题
 
 ### Q1: 激活虚拟环境后 `uv: command not found`
 
@@ -132,12 +154,13 @@ uv --version
 
 或者先 `v13in` 再 `python your_script.py`。
 
-## 6. 快速自检清单
+## 7. 快速自检清单
 
 ```bash
 which uv
 uv --version
 /opt/venvs/main/py13/bin/python --version
+/opt/venvs/main/py13/bin/python -c "import sqlite3; print(sqlite3.sqlite_version)"
 source /opt/venvs/main/py13/bin/activate
 python -c "import langchain,fastapi,requests; print('ok')"
 deactivate
