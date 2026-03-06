@@ -1,62 +1,31 @@
-# SSH 开发隧道说明（脱敏版）
+# SSH 开发隧道说明
 
 ## 0. 不用脚本，直接使用（启动 + 停止）
 
-### 0.1 直接启动（写 PID 文件）
+### 0.1 启动（前台保持运行）
 
 ```bash
-mkdir -p .cache
-ssh -N \
-  -o ExitOnForwardFailure=yes \
-  -o ServerAliveInterval=30 \
-  -o ServerAliveCountMax=3 \
-  -p {ssh_port} \
-  -L {local_keycloak_port}:127.0.0.1:{remote_keycloak_port} \
-  -L {local_openfga_port}:127.0.0.1:{remote_openfga_port} \
-  -L {local_pg_port}:127.0.0.1:{remote_pg_port} \
-  -L {local_ollama_port}:127.0.0.1:{remote_ollama_port} \
-  -L {local_runtime_port}:127.0.0.1:{remote_runtime_port} \
-  {ssh_user}@{ip} > /dev/null 2>&1 &
-echo $! > .cache/dev_tunnel_ssh.pid
+ssh -N -p 10248 -L 8000:127.0.0.1:8000 -L 8001:127.0.0.1:8001 root@218.93.206.100
 ```
 
-停止：
+说明：
+
+- 这条命令会占用当前终端。
+- 只要命令还在运行，隧道就有效。
+
+### 0.2 停止
+
+方式一（推荐）：在运行该命令的终端直接退出（`Ctrl+C`）。
+
+方式二（在新终端执行）：先查监听进程，再手动结束。
 
 ```bash
-kill "$(cat .cache/dev_tunnel_ssh.pid)" && rm -f .cache/dev_tunnel_ssh.pid
+lsof -iTCP:8000 -sTCP:LISTEN
+lsof -iTCP:8001 -sTCP:LISTEN
+kill <pid>
 ```
 
-### 0.2 直接启动（不写 PID 文件，推荐）
-
-```bash
-mkdir -p .cache
-SOCK=.cache/dev_tunnel.sock
-ssh -M -S "$SOCK" -fN \
-  -o ExitOnForwardFailure=yes \
-  -o ServerAliveInterval=30 \
-  -o ServerAliveCountMax=3 \
-  -p {ssh_port} \
-  -L {local_keycloak_port}:127.0.0.1:{remote_keycloak_port} \
-  -L {local_openfga_port}:127.0.0.1:{remote_openfga_port} \
-  -L {local_pg_port}:127.0.0.1:{remote_pg_port} \
-  -L {local_ollama_port}:127.0.0.1:{remote_ollama_port} \
-  -L {local_runtime_port}:127.0.0.1:{remote_runtime_port} \
-  {ssh_user}@{ip}
-```
-
-停止：
-
-```bash
-SOCK=.cache/dev_tunnel.sock
-ssh -S "$SOCK" -O exit {ssh_user}@{ip}
-rm -f "$SOCK"
-```
-
-兜底（按端口结束监听进程）：
-
-```bash
-lsof -tiTCP:{local_keycloak_port} -sTCP:LISTEN | xargs -r kill
-```
+如果你用的是其他本地端口，就把 `8000/8001` 替换成对应端口。
 
 ## 1. SSH 隧道是什么
 
