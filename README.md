@@ -19,3 +19,12 @@ Location: `infra_provisioning_hub/debian/`
 - `uv_py13_replica_guide.md`
 - `ollama_rag_repro_guide.md`
 - `codex_full_permissions_repro_guide.md`
+
+## File Management Plan
+
+Location: `infra_provisioning_hub/plan/`
+
+- `file-management-solution.md`
+- `architecture.md`
+- `api-and-mcp-spec.md`
+- `implementation-plan.md`
