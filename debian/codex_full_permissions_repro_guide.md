@@ -114,6 +114,12 @@ TOML
 
 补充：若你已写入全局配置但当前会话仍非最高权限，优先检查“会话启动参数”是否覆盖了配置文件。
 
+可直接使用的示例命令：
+
+```bash
+codex --search --dangerously-bypass-approvals-and-sandbox
+```
+
 ---
 
 ## 6. 生效验证
@@ -166,3 +172,31 @@ cat ~/.codex/config.toml
 2. 新建会话时使用的高权限启动参数（本文件第 5 节）
 3. 生效验证命令（本文件第 6 节）
 4. 常见问题判定逻辑（本文件第 7 节）
+
+---
+
+## 9. 安装检索工具（ripgrep + fd）
+
+为保证命令检索效率，建议在 Debian/Ubuntu 上预装 `ripgrep` 与 `fd`：
+
+```bash
+apt-get update
+apt-get install -y ripgrep fd-find
+```
+
+说明：
+- `ripgrep` 命令名是 `rg`
+- Debian 系里 `fd` 包名为 `fd-find`，命令名是 `fdfind`
+- 若你希望直接使用 `fd`，可加软链接：
+
+```bash
+ln -sf /usr/bin/fdfind /usr/local/bin/fd
+```
+
+验证：
+
+```bash
+rg --version
+fdfind --version
+fd --version
+```
